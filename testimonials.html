@@ -12,6 +12,13 @@
     <style>
         body { font-family: 'Inter', sans-serif; }
         .font-serif { font-family: 'Playfair Display', serif; }
+        /* Mobile menu styles */
+#mobile-menu {
+    display: none;
+}
+#mobile-menu.show {
+    display: block;
+}
     </style>
 </head>
 <body class="bg-white text-slate-900">
@@ -153,21 +160,42 @@
     <div id="footer-container"></div>
 
     <script>
-        // Fetch Header
-        fetch('header.html')
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById('header-container').innerHTML = data;
-                
-                // Re-initialize mobile menu logic
-                const btn = document.getElementById('mobile-menu-button');
-                const menu = document.getElementById('mobile-menu');
-                if(btn && menu) {
-                    btn.addEventListener('click', () => {
-                        menu.classList.toggle('hidden');
+       // Fetch Header
+fetch('header.html')
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById('header-container').innerHTML = data;
+        
+        // Initialize mobile menu AFTER header is loaded
+        setTimeout(() => {
+            const btn = document.getElementById('mobile-btn');
+            const menu = document.getElementById('mobile-menu');
+            
+            if(btn && menu) {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    if (menu.classList.contains('show')) {
+                        menu.classList.remove('show');
+                        btn.innerHTML = `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>`;
+                    } else {
+                        menu.classList.add('show');
+                        btn.innerHTML = `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>`;
+                    }
+                });
+
+                // Close menu when clicking links
+                const mobileLinks = menu.querySelectorAll('a');
+                mobileLinks.forEach(link => {
+                    link.addEventListener('click', function() {
+                        menu.classList.remove('show');
+                        btn.innerHTML = `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>`;
                     });
-                }
-            });
+                });
+            }
+        }, 100);
+    });
 
         // Fetch Footer
         fetch('footer.html')
