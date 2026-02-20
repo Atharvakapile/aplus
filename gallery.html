@@ -10,7 +10,13 @@
     
     <style>
         body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
-        
+        /* Mobile menu styles */
+#mobile-menu {
+    display: none;
+}
+#mobile-menu.show {
+    display: block;
+}
         /* Premium Masonry Engine */
         .masonry-wrapper {
             column-count: 1;
@@ -159,13 +165,37 @@
             document.body.style.overflow = 'auto'; // Resume scrolling
         }
 
-        // FETCH CONTENT
         fetch('header.html').then(r => r.text()).then(d => {
-            document.getElementById('header-container').innerHTML = d;
-            const btn = document.getElementById('mobile-menu-button');
-            const menu = document.getElementById('mobile-menu');
-            if(btn && menu) btn.onclick = () => menu.classList.toggle('hidden');
-        });
+    document.getElementById('header-container').innerHTML = d;
+    // Initialize mobile menu AFTER header is loaded
+    setTimeout(() => {
+        const btn = document.getElementById('mobile-btn');
+        const menu = document.getElementById('mobile-menu');
+        if(btn && menu) {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                if (menu.classList.contains('show')) {
+                    menu.classList.remove('show');
+                    btn.innerHTML = `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>`;
+                } else {
+                    menu.classList.add('show');
+                    btn.innerHTML = `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>`;
+                }
+            });
+
+            // Close menu when clicking links
+            const mobileLinks = menu.querySelectorAll('a');
+            mobileLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    menu.classList.remove('show');
+                    btn.innerHTML = `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>`;
+                });
+            });
+        }
+    }, 100);
+});
 
         fetch('footer.html').then(r => r.text()).then(d => {
             document.getElementById('footer-container').innerHTML = d;
